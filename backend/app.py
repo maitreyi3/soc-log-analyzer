@@ -4,9 +4,11 @@ from flask_session import Session
 from datetime import timedelta
 import secrets
 import os
+from backend.config import UPLOAD_FOLDER
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16) 
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER 
 
 # Create session directory if it doesn't exist
 session_dir = os.path.join(os.getcwd(), "backend", "flask_sessions")
@@ -35,10 +37,12 @@ CORS(app,
 from backend.routes.auth_routes import auth_bp
 from backend.routes.upload_routes import upload_bp
 from backend.routes.analytics_routes import analytics_bp
+from backend.routes.files import files_bp
 
 app.register_blueprint(auth_bp, url_prefix="/api")
 app.register_blueprint(upload_bp, url_prefix="/api")
 app.register_blueprint(analytics_bp, url_prefix="/api")
+app.register_blueprint(files_bp, url_prefix="/api")
 
 @app.before_request
 def log_session_info():
@@ -53,6 +57,7 @@ def log_session_after(response):
     if request.endpoint and 'api' in request.endpoint:
         print(f"Session after: {dict(session)}")
         print(f"Response headers: {dict(response.headers)}")
+
     return response
 
 
