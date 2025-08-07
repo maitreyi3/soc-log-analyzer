@@ -8,6 +8,8 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
+  Label
 } from 'recharts';
 
 interface AnalyticsDashboardProps {
@@ -100,14 +102,55 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ dashboard }) =>
       {/* Timeline Summary */}
       {timelineData.length > 0 && (
         <div className={styles.section}>
-          <h3>Timeline of Requests (Hourly)</h3>
+          <div className={styles.sectionHeader}>
+            <h3>Timeline of Requests (Hourly)
+              <Info text="how many requests were received each hour and how the error rate fluctuated." />
+            </h3>
+          </div>
+
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={timelineData}>
+            <LineChart
+              data={timelineData}
+              margin={{ top: 10, right: 30, left: 20, bottom: 20 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="hour" />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
-              <Tooltip />
+              <XAxis dataKey="hour">
+                <Label
+                  value="Hour of Day"
+                  position="insideBottom"
+                  offset={-5}
+                  style={{ fontSize: 12, fill: "#666" }}
+                />
+              </XAxis>
+
+              <YAxis
+                yAxisId="left"
+                label={{
+                  value: "Total Requests (per hour)",
+                  angle: -90,
+                  position: "insideLeft",
+                  style: { textAnchor: "middle", fontSize: 12, fill: "#666" }
+                }}
+              />
+
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                label={{
+                  value: "Error Rate (%)",
+                  angle: 90,
+                  position: "insideRight",
+                  style: { textAnchor: "middle", fontSize: 12, fill: "#666" }
+                }}
+              />
+
+              <Tooltip
+                formatter={(val, name) =>
+                  name === "errorRate" ? [`${val}%`, "Error Rate"] : [val, "Requests"]
+                }
+              />
+
+              <Legend verticalAlign="top" height={36} />
 
               <Line
                 yAxisId="left"
@@ -122,6 +165,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ dashboard }) =>
                     <circle cx={cx} cy={cy} r={3} fill="#8884d8" />
                   )
                 }
+                name="Requests"
               />
 
               <Line
@@ -130,6 +174,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ dashboard }) =>
                 dataKey="errorRate"
                 stroke="#ff7300"
                 strokeDasharray="5 5"
+                name="Error Rate"
               />
             </LineChart>
           </ResponsiveContainer>

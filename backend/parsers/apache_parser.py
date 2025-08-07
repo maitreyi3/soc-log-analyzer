@@ -44,7 +44,7 @@ def parse_apache_clf_line(line: str) -> Dict[str, Any]:
         "user_agent": data["agent"] or "-"
     }
 
-def parse_apache_log_file(file_path: str) -> List[Dict[str, Any]]:
+def parse_apache_log_file(file_path: str, max_lines: int = 50000) -> List[Dict[str, Any]]:
     parsed_logs = []
     with open(file_path, "r", encoding="utf-8") as f:
         for line in f:
@@ -54,6 +54,8 @@ def parse_apache_log_file(file_path: str) -> List[Dict[str, Any]]:
             parsed = parse_apache_clf_line(line)
             if parsed:
                 parsed_logs.append(parsed)
+            if len(parsed_logs) >= max_lines:
+                break
     return parsed_logs
 
 def detect_anomalies_ai(entries):
@@ -195,6 +197,9 @@ def generate_dashboard(logs: List[Dict[str, Any]]) -> Dict[str, Any]:
     top_offenders = []
     for ip, count in ip_counter.most_common(5):
         error_count = offender_errors[ip]
+        if error_count == 0:
+            continue
+        
         success_rate = round(100 * (1 - error_count / count), 2)
         top_urls = [url for url, _ in Counter(offender_urls[ip]).most_common(3)]
         top_offenders.append({

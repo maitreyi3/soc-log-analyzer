@@ -15,7 +15,6 @@ export default function HomePage() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch login status
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/check_login", { withCredentials: true })
@@ -51,7 +50,6 @@ export default function HomePage() {
       </div>
     );
   }
-  console.log(user)
 
   return (
     <div className={styles.container}>
@@ -79,7 +77,7 @@ export default function HomePage() {
                   )
                 }
               >
-                Documentation
+                GitHub
               </button>
             </>
           )}
@@ -91,17 +89,6 @@ export default function HomePage() {
                 onClick={() => router.push("/upload")}
               >
                 Upload Logs
-              </button>
-              <button
-                className={styles.secondaryBtn}
-                onClick={() =>
-                  window.open(
-                    "https://github.com/maitreyi3/soc-log-analyzer",
-                    "_blank"
-                  )
-                }
-              >
-                Documentation
               </button>
               <button
                 className={styles.secondaryBtn}
@@ -128,17 +115,6 @@ export default function HomePage() {
               </button>
               <button
                 className={styles.secondaryBtn}
-                onClick={() =>
-                  window.open(
-                    "https://github.com/maitreyi3/soc-log-analyzer",
-                    "_blank"
-                  )
-                }
-              >
-                Documentation
-              </button>
-              <button
-                className={styles.secondaryBtn}
                 onClick={handleLogout}
               >
                 Logout
@@ -151,31 +127,30 @@ export default function HomePage() {
       <section className={styles.features}>
         <h2>About</h2>
         <p>
-          SOC Log Analyzer is a powerful tool for security teams to analyze HTTP and system logs.
-          Detect anomalies, top offenders, and suspicious activity in minutes.
+          SOC Log Analyzer is a robust log analysis platform built for cybersecurity
+          and operations teams to extract meaningful insights from Apache logs,
+          without the noise.
         </p>
         <ul className={styles.featureList}>
           <li>✔️ Upload and preview Apache log types</li>
           <li>✔️ Get analytics and security insights in one place</li>
-          <li>✔️ Admins can manage storage and all uploads</li>
+          <li>✔️ Spot irregular behavior through AI-powered analysis</li>
         </ul>
       </section>
 
       <section className={styles.howItWorks}>
         <h2>Quick Start</h2>
         <div className={styles.steps}>
-          <div className={styles.step}>
-            <span className={styles.stepNumber}>1</span>
-            <p>Login to your account</p>
-          </div>
-          <div className={styles.step}>
-            <span className={styles.stepNumber}>2</span>
-            <p>Upload your log file (HTTP or System)</p>
-          </div>
-          <div className={styles.step}>
-            <span className={styles.stepNumber}>3</span>
-            <p>Analyze logs and get actionable insights</p>
-          </div>
+          {[
+            "Login to your account",
+            "Upload your log file",
+            "Analyze logs and get actionable insights",
+          ].map((text, idx) => (
+            <div key={idx} className={styles.step}>
+              <span className={styles.stepNumber}>{idx + 1}</span>
+              <p>{text}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -189,8 +164,6 @@ export default function HomePage() {
           >
             GitHub
           </a>
-          <a href="/docs">Documentation</a>
-          <a href="/contact">Contact</a>
         </div>
       </footer>
     </div>
