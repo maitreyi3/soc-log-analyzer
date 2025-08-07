@@ -5,6 +5,7 @@ from datetime import timedelta
 import secrets
 import os
 from backend.config import UPLOAD_FOLDER
+from flask import send_from_directory
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16) 
@@ -60,6 +61,9 @@ def log_session_after(response):
 
     return response
 
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == "__main__":
     print("Starting Flask backend")

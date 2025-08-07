@@ -51,6 +51,7 @@ export default function HomePage() {
       </div>
     );
   }
+  console.log(user)
 
   return (
     <div className={styles.container}>
@@ -121,9 +122,9 @@ export default function HomePage() {
               </button>
               <button
                 className={styles.primaryBtn}
-                onClick={() => router.push("/admin/storage")}
+                onClick={() => router.push("/files")}
               >
-                Storage Management
+                File Management
               </button>
               <button
                 className={styles.secondaryBtn}
