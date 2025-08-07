@@ -45,26 +45,9 @@ app.register_blueprint(upload_bp, url_prefix="/api")
 app.register_blueprint(analytics_bp, url_prefix="/api")
 app.register_blueprint(files_bp, url_prefix="/api")
 
-@app.before_request
-def log_session_info():
-    from flask import session, request
-    if request.endpoint and 'api' in request.endpoint:
-        print(f"Request: {request.method} {request.path}")
-        print(f"Session before: {dict(session)}")
-
-@app.after_request
-def log_session_after(response):
-    from flask import session, request
-    if request.endpoint and 'api' in request.endpoint:
-        print(f"Session after: {dict(session)}")
-        print(f"Response headers: {dict(response.headers)}")
-
-    return response
-
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == "__main__":
-    print("Starting Flask backend")
     app.run(debug=True, port=8000, host='0.0.0.0')

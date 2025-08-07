@@ -94,8 +94,6 @@ export default function UploadPage() {
         }
       );
 
-      console.log('Upload response:', response.data);
-
       setMessage(response.data.message || "Upload successful!");
       setPreview(response.data.preview_events || []);
       setLocalDashboard(response.data.dashboard || null);
@@ -107,7 +105,6 @@ export default function UploadPage() {
       }
 
     } catch (error: any) {
-      console.error(error);
       if (error.response?.status === 401) {
         router.push("/login");
       } else {
@@ -127,7 +124,6 @@ export default function UploadPage() {
       setLoggedIn(false);
       router.push("/"); 
     } catch (error) {
-      console.error(error);
     }
   };
 

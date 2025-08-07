@@ -35,52 +35,68 @@
   text-align: center;
 }
 
-/* Stats Grid */
-.statsGrid {
+.statsGrid,
+.errorStats,
+.securityGrid,
+.methodGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
-.statCard {
+.statsGrid {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.errorStats {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.securityGrid {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.methodGrid {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.statCard,
+.section {
   background: white;
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  text-align: center;
   border: 1px solid #e2e8f0;
+  text-align: center;
 }
 
-.statCard h3 {
+.statCard h3,
+.securityCard h4,
+.methodName,
+.peakCard h4 {
   font-size: 0.9rem;
-  color: #64748b;
-  margin: 0 0 0.5rem 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  margin: 0 0 0.5rem 0;
+}
+
+.statValue,
+.methodCount,
+.securityValue,
+.peakTime {
+  font-weight: bold;
+  color: #1e293b;
 }
 
 .statValue {
   font-size: 2rem;
-  font-weight: bold;
-  color: #1e293b;
-  margin: 0;
-}
-
-.section {
-  background: white;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
 }
 
 .section h3 {
   font-size: 1.25rem;
   font-weight: 600;
   color: #1e293b;
-  margin: 0 0 1rem 0;
+  margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid #f1f5f9;
 }
@@ -128,18 +144,21 @@
   font-size: 0.875rem;
 }
 
-.table th {
-  background: #f8fafc;
+.table th,
+.table td {
   padding: 0.75rem;
   text-align: left;
-  font-weight: 600;
-  color: #374151;
+  white-space: nowrap;
   border-bottom: 1px solid #e2e8f0;
 }
 
+.table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #374151;
+}
+
 .table td {
-  padding: 0.75rem;
-  border-bottom: 1px solid #f1f5f9;
   vertical-align: top;
 }
 
@@ -147,35 +166,49 @@
   background: #f8fafc;
 }
 
-.urlCell {
+.urlCell,
+.ipCell,
+.suspiciousIp,
+.peakTime {
   font-family: 'Monaco', 'Menlo', monospace;
-  font-size: 0.8rem;
-  max-width: 300px;
   word-break: break-all;
+  font-size: 0.8rem;
+}
+
+.urlCell {
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: #1e40af;
 }
 
-.ipCell {
-  font-family: 'Monaco', 'Menlo', monospace;
+.ipCell,
+.suspiciousIp {
   font-weight: 600;
   color: #dc2626;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.errorCount {
+.errorCount,
+.errorStatus,
+.errorUrlCount {
   color: #dc2626;
   font-weight: 600;
 }
 
+.successRate span,
 .successRate {
   font-weight: 600;
 }
 
 .highSuccess {
-  color: #059669;
+  color: #388e3c;
 }
 
 .lowSuccess {
-  color: #dc2626;
+  color: #e53935;
 }
 
 .urlList {
@@ -191,13 +224,6 @@
   word-break: break-all;
 }
 
-.errorStats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
 .errorCard {
   background: #fef2f2;
   border: 1px solid #fecaca;
@@ -207,80 +233,45 @@
 
 .errorCard h4 {
   color: #dc2626;
-  margin: 0 0 1rem 0;
   font-size: 1rem;
+  margin-bottom: 1rem;
 }
 
-.errorList {
+.errorList,
+.errorUrlList,
+.suspiciousList {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.errorItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  background: white;
-  border-radius: 4px;
-  border: 1px solid #f3e8e8;
-}
-
-.errorStatus {
-  font-weight: 600;
-  color: #dc2626;
-}
-
-.errorUrls {
-  margin-top: 1rem;
-}
-
-.errorUrls h4 {
-  color: #374151;
-  font-size: 1rem;
-  margin: 0 0 0.75rem 0;
-}
-
-.errorUrlList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
+.errorItem,
 .errorUrlItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem;
-  background: #f8fafc;
   border-radius: 4px;
+  background: white;
+  border: 1px solid #f3e8e8;
+}
+
+.errorUrlItem {
+  background: #f8fafc;
   border: 1px solid #e2e8f0;
 }
 
 .errorUrl {
-  font-family: 'Monaco', 'Menlo', monospace;
-  font-size: 0.8rem;
   color: #6b7280;
   flex: 1;
   margin-right: 1rem;
-  word-break: break-all;
 }
 
 .errorUrlCount {
-  font-weight: 600;
-  color: #dc2626;
   background: #fee2e2;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-size: 0.8rem;
-}
-
-.securityGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
 }
 
 .securityCard {
@@ -291,19 +282,14 @@
   text-align: center;
 }
 
-.securityCard h4 {
-  color: #92400e;
-  margin: 0 0 0.5rem 0;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .securityValue {
   font-size: 1.5rem;
-  font-weight: bold;
   color: #92400e;
   margin-bottom: 0.25rem;
+}
+
+.securityCard h4 {
+  color: #92400e;
 }
 
 .securityCard small {
@@ -318,15 +304,7 @@
 .recentSuspicious h4 {
   color: #374151;
   font-size: 1rem;
-  margin: 0 0 1rem 0;
-}
-
-.suspiciousList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  max-height: 300px;
-  overflow-y: auto;
+  margin-bottom: 1rem;
 }
 
 .suspiciousItem {
@@ -341,13 +319,8 @@
   align-items: center;
 }
 
-.suspiciousIp {
-  font-family: 'Monaco', 'Menlo', monospace;
-  font-weight: 600;
-  color: #dc2626;
-}
-
-.suspiciousMethod {
+.suspiciousMethod,
+.suspiciousStatus {
   background: #1f2937;
   color: white;
   padding: 0.25rem 0.5rem;
@@ -359,18 +332,10 @@
 
 .suspiciousStatus {
   background: #dc2626;
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 0.7rem;
 }
 
 .suspiciousUrl {
-  font-family: 'Monaco', 'Menlo', monospace;
   color: #6b7280;
-  word-break: break-all;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -382,12 +347,6 @@
   text-align: right;
 }
 
-.methodGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
-}
-
 .methodItem {
   background: #f0f9ff;
   border: 1px solid #bae6fd;
@@ -397,17 +356,10 @@
 }
 
 .methodName {
-  font-weight: 600;
   color: #0369a1;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .methodCount {
-  font-size: 1.25rem;
-  font-weight: bold;
   color: #1e40af;
 }
 
@@ -426,79 +378,9 @@
   min-width: 250px;
 }
 
-.peakCard h4 {
-  margin: 0 0 1rem 0;
-  font-size: 1rem;
-  opacity: 0.9;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.peakTime {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  font-family: 'Monaco', 'Menlo', monospace;
-}
-
 .peakRequests {
   font-size: 1.1rem;
   opacity: 0.9;
-}
-
-@media (max-width: 768px) {
-  .dashboard {
-    padding: 1rem;
-  }
-  
-  .statsGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .errorStats {
-    grid-template-columns: 1fr;
-  }
-  
-  .securityGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .methodGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .suspiciousItem {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-    text-align: center;
-  }
-  
-  .table {
-    font-size: 0.75rem;
-  }
-  
-  .table th,
-  .table td {
-    padding: 0.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .title {
-    font-size: 1.5rem;
-  }
-  
-  .statValue {
-    font-size: 1.5rem;
-  }
-  
-  .methodGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .statusGrid {
-    flex-direction: column;
-  }
 }
 
 .infoIcon {
@@ -521,47 +403,53 @@
 }
 
 .infoIcon:hover {
-  background-color: #bfdbfe; /* blue-200 */
+  background-color: #bfdbfe;
   color: #1d4ed8;
   transform: scale(1.1);
 }
 
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 1rem;
+  }
 
-.tableContainer {
-  overflow-x: auto;
+  .statsGrid,
+  .errorStats,
+  .securityGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .methodGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .suspiciousItem {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .table {
+    font-size: 0.75rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem;
+  }
 }
 
-.table th, .table td {
-  white-space: nowrap;
-  padding: 8px;
-  text-align: left;
-}
+@media (max-width: 480px) {
+  .title,
+  .statValue {
+    font-size: 1.5rem;
+  }
 
-.urlCell {
-  max-width: 400px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  .methodGrid {
+    grid-template-columns: 1fr;
+  }
 
-.ipCell {
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.errorCount {
-  color: #d32f2f;
-  font-weight: 600;
-}
-
-.successRate span {
-  font-weight: 600;
-}
-
-.lowSuccess {
-  color: #e53935;
-}
-
-.highSuccess {
-  color: #388e3c;
+  .statusGrid {
+    flex-direction: column;
+  }
 }
