@@ -44,7 +44,7 @@ def parse_apache_clf_line(line: str) -> Dict[str, Any]:
         "user_agent": data["agent"] or "-"
     }
 
-def parse_apache_log_file(file_path: str, max_lines: int = 1000) -> List[Dict[str, Any]]:
+def parse_apache_log_file(file_path: str) -> List[Dict[str, Any]]:
     parsed_logs = []
     with open(file_path, "r", encoding="utf-8") as f:
         for line in f:
@@ -54,8 +54,6 @@ def parse_apache_log_file(file_path: str, max_lines: int = 1000) -> List[Dict[st
             parsed = parse_apache_clf_line(line)
             if parsed:
                 parsed_logs.append(parsed)
-            if len(parsed_logs) >= max_lines:
-                break
     return parsed_logs
 
 def detect_anomalies_ai(entries):
