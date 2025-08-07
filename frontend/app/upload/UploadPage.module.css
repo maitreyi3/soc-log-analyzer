@@ -195,11 +195,13 @@ html,
   transition: all 0.2s ease;
   border: 2px dashed #d1d5db;
   border-radius: 6px;
+  cursor: pointer;
 }
 
 .fileInput:hover {
   border-color: #0052cc;
   background: #f0f8ff;
+  cursor: pointer;
 }
 
 .fileInfo {
@@ -215,6 +217,38 @@ html,
   color: #475569;
 }
 
+.fileInput::-webkit-file-upload-button {
+  /* Chrome/Safari */
+  background-color: #1a202c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.fileInput::-webkit-file-upload-button:hover {
+  background-color: #1e293b;
+}
+
+/* 3. And the standard pseudo-element for other browsers */
+.fileInput::file-selector-button {
+  background-color: #1a202c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.fileInput::file-selector-button:hover {
+  background-color: #1e293b;
+}
+
 .fileName {
   font-weight: 500;
 }
@@ -224,7 +258,6 @@ html,
   color: #64748b;
 }
 
-/* Upload Button */
 .uploadButton {
   background: #1a202c;
   color: white;

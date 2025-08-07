@@ -52,3 +52,25 @@
   font-size: 1rem;
   color: #475569;
 }
+
+.navButtons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.navBtn {
+  background: #0f172a;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.navBtn:hover {
+  background: #1e293b;
+}

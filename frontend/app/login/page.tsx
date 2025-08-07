@@ -1,4 +1,3 @@
-// LoginPage.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -11,6 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error">("success");
   const router = useRouter();
 
   const handleLogin = async () => {
