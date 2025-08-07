@@ -40,7 +40,6 @@ frontend/.env.local
 # OS / Editor files
 .DS_Store
 Thumbs.db
-config.py
 
 # -----------------------
 # Docker / Infra (future)
