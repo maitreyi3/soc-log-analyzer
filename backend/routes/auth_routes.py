@@ -16,10 +16,8 @@ def login():
         session["role"] = "admin" if username == "admin" else "test"
         session.permanent = True
         
-        print(f"Login successful - Session set: {dict(session)}")
         return jsonify({"message": "Login successful"}), 200
 
-    print("Login failed - Invalid credentials")
     return jsonify({"error": "Invalid credentials"}), 401
 
 
@@ -29,9 +27,6 @@ def check_login():
     username = session.get("username", None)
     role = session.get("role", None)
 
-    print(f"Check login - Session: {dict(session)}")
-    print(f"Logged in status: {logged_in}")
-    
     return jsonify({
         "logged_in": logged_in,
         "username": username,
@@ -41,7 +36,5 @@ def check_login():
 
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
-    print(f"Logout - Session before clear: {dict(session)}")
     session.clear()
-    print(f"Logout - Session after clear: {dict(session)}")
     return jsonify({"message": "Logged out successfully"}), 200
