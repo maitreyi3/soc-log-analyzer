@@ -13,6 +13,7 @@ def login():
     if verify_user(username, password):
         session["logged_in"] = True
         session["username"] = username
+        session["role"] = "admin" if username == "admin" else "test"
         session.permanent = True
         
         print(f"Login successful - Session set: {dict(session)}")
@@ -26,13 +27,15 @@ def login():
 def check_login():
     logged_in = session.get("logged_in", False)
     username = session.get("username", None)
-    
+    role = session.get("role", None)
+
     print(f"Check login - Session: {dict(session)}")
     print(f"Logged in status: {logged_in}")
     
     return jsonify({
         "logged_in": logged_in,
-        "username": username
+        "username": username,
+        "role": role
     }), 200
 
 
