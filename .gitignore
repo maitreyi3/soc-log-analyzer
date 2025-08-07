@@ -1,0 +1,50 @@
+# -----------------------
+# Python / Flask backend
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+backend/.venv/
+
+# Flask session + uploads
+backend/flask_sessions/
+backend/uploads/
+
+# Optional sample logs for local testing
+sample_logs/
+
+# -----------------------
+# Node / Next.js frontend
+node_modules/
+.next/
+out/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Local environment files
+.env
+.env.local
+.env.development
+.env.production
+frontend/.env.local
+
+# -----------------------
+# OS / Editor files
+.DS_Store
+Thumbs.db
+config.py
+
+# -----------------------
+# Docker / Infra (future)
+infra/.temp/
+*.pid
+*.sock
+docker-compose.override.yml
