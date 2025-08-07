@@ -184,15 +184,18 @@ export default function UploadPage() {
       </div>
 
       {activeTab === 'upload' && (
+        <div className={styles.uploadPageLayout}>
+
+          <div className={styles.sidebarInfo}>
+          <h3>Need Help?</h3>
+          <p>
+            Upload a <strong>.log</strong> or <strong>.txt</strong> file from your Apache server logs.<br /><br />
+            We will analyze traffic, detect errors, and highlight suspicious behavior like failed logins and IP abuse.
+          </p>
+        </div>
+
         <div className={styles.uploadSection}>
           <h2>Upload Log File</h2>
-
-          <div className={styles.controls}>
-            <label>Select Log Type:</label>
-            <select value={logType} onChange={(e) => setLogType(e.target.value)}>
-              <option value="apache_clf">Apache Combined Log</option>
-            </select>
-          </div>
 
           <div className={styles.fileUpload}>
             <input 
@@ -231,6 +234,7 @@ export default function UploadPage() {
               {message}
             </div>
           )}
+          </div>
         </div>
       )}
 
