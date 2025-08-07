@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
 
 from backend.parsers.apache_parser import (
@@ -14,15 +14,12 @@ UPLOAD_FOLDER = os.path.join(os.getcwd(), "backend", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # File Upload & Analytics
-
 @analytics_bp.route("/upload", methods=["POST"])
 def upload_log():
     if "file" not in request.files:
         return jsonify({"error": "No file provided"}), 400
 
     file = request.files["file"]
-    log_type = request.form.get("log_type", "apache_clf")
-
     if file.filename == "":
         return jsonify({"error": "No selected file"}), 400
 
@@ -39,7 +36,7 @@ def upload_log():
     if detected_type != "apache_clf":
         return jsonify({"error": "Uploaded file is not a valid Apache log format"}), 400
 
-    # Parse file
+    # Parse file and generate dashboard
     parsed_logs = parse_apache_log_file(filepath)
     preview = parsed_logs[:50]
     dashboard = generate_dashboard(parsed_logs)
@@ -58,12 +55,9 @@ def get_analytics(filename):
     if not os.path.exists(filepath):
         return jsonify({"error": "File not found"}), 404
 
-    # Detect type for safety
     with open(filepath, "r", encoding="utf-8") as f:
         first_line = f.readline().strip()
-    detected_type = detect_log_type(first_line)
-
-    if detected_type != "apache_clf":
+    if detect_log_type(first_line) != "apache_clf":
         return jsonify({"error": "File is not a supported Apache log"}), 400
 
     parsed_logs = parse_apache_log_file(filepath)
@@ -75,24 +69,29 @@ def get_analytics(filename):
         "dashboard": dashboard
     })
 
+# Combined Dashboard for the Most Recently Uploaded File
 @analytics_bp.route("/dashboard", methods=["GET"])
 def dashboard_combined():
-    files = sorted(os.listdir(UPLOAD_FOLDER))
+    # List all uploaded files
+    files = os.listdir(UPLOAD_FOLDER)
     if not files:
         return jsonify({"error": "No uploaded files found"}), 404
 
-    latest_file = files[-1]
-    filepath = os.path.join(UPLOAD_FOLDER, latest_file)
+    # Determine the most recently modified file
+    filepaths = [os.path.join(UPLOAD_FOLDER, f) for f in files]
+    latest_path = max(filepaths, key=os.path.getmtime)
+    latest_file = os.path.basename(latest_path)
 
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(latest_path, "r", encoding="utf-8") as f:
         first_line = f.readline().strip()
     if detect_log_type(first_line) != "apache_clf":
         return jsonify({"error": "Invalid log format"}), 400
 
-    parsed_logs = parse_apache_log_file(filepath)
+    parsed_logs = parse_apache_log_file(latest_path)
     dashboard = generate_dashboard(parsed_logs)
 
     return jsonify({
+        "filename": latest_file,
         "basic_stats": dashboard.get("basic_stats"),
         "top_urls": dashboard.get("top_urls"),
         "top_offenders": dashboard.get("top_offenders"),

@@ -1,3 +1,4 @@
+/* LoginPage.module.css */
 .pageContainer {
   min-height: 100vh;
   background: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
@@ -7,13 +8,11 @@
   padding: 0 20px;
 }
 
-/* Top Ribbon */
+/* “Header” ribbon */
 .ribbon {
   width: 100%;
   background: linear-gradient(to right, #1d4ed8, #0ea5e9);
-  color: white;
   display: flex;
-  justify-content: flex-start;
   align-items: center;
   padding: 12px 24px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -21,27 +20,31 @@
 }
 
 .logo {
+  color: white;
   font-size: 1.2rem;
   font-weight: bold;
 }
 
-.homeButton {
+/* push Home to right */
+.navButtons {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #1d4ed8;
-  background: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s ease-in-out;
+  margin-left: auto;
 }
 
-.homeButton:hover {
-  background: #e5e7eb;
+/* match UploadPage’s .homeBtn */
+.homeBtn {
+  background: #0f172a;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.homeBtn:hover {
+  background: #1e293b;
 }
 
 .loginCard {
@@ -65,6 +68,7 @@
 
 .inputField {
   width: 100%;
+  max-width: 300px;
   padding: 0.6rem;
   margin-bottom: 1rem;
   border: 1px solid #cbd5e1;
@@ -79,16 +83,35 @@
   box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.2);
 }
 
+.passwordWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 1rem;
+}
+
+.eyeButton {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
 .loginButton {
   width: 100%;
+  max-width: 300px;
   padding: 0.7rem 1rem;
-  font-weight: 600;
-  color: white;
   background: linear-gradient(to right, #1d4ed8, #0ea5e9);
+  color: white;
   border: none;
   border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease-in-out;
+  transition: background 0.2s ease;
+  margin-top: 0.5rem;
 }
 
 .loginButton:hover {
@@ -97,9 +120,9 @@
 
 .message {
   margin-top: 1rem;
-  text-align: center;
+  color: #ef4444;
   font-weight: 500;
-  color: #ef4444; /* red for error */
+  text-align: center;
 }
 
 .subtleNote {

@@ -166,7 +166,7 @@ html,
   font-size: 14px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   position: sticky;
-  top: 100px;
+  top: 50px;
   width: 260px;
   line-height: 1.5;
   height: fit-content;
@@ -189,7 +189,7 @@ html,
   background-color: #ebf8ff;
   font-size: 14px;
   color: #2b6cb0;
-  width: 100%;
+  width: 50%;
   padding: 6px 12px;
   cursor: pointer;
   transition: all 0.2s ease;
