@@ -1,0 +1,110 @@
+.pageContainer {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px;
+}
+
+/* Top Ribbon */
+.ribbon {
+  width: 100%;
+  background: linear-gradient(to right, #1d4ed8, #0ea5e9);
+  color: white;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 12px 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
+}
+
+.logo {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.homeButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1d4ed8;
+  background: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.homeButton:hover {
+  background: #e5e7eb;
+}
+
+.loginCard {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heading {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+}
+
+.inputField {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.inputField:focus {
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.2);
+}
+
+.loginButton {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(to right, #1d4ed8, #0ea5e9);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.loginButton:hover {
+  background: linear-gradient(to right, #1e40af, #0284c7);
+}
+
+.message {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: 500;
+  color: #ef4444; /* red for error */
+}
+
+.subtleNote {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #64748b;
+  text-align: center;
+}

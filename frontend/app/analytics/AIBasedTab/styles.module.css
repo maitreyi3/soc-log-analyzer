@@ -1,0 +1,167 @@
+.container {
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-family: sans-serif;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.summary {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #334155;
+  text-align: center;
+}
+
+.tableContainer {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.anomalyTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.anomalyTable th,
+.anomalyTable td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.95rem;
+}
+
+.anomalyTable th {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.errorCell {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.highConfidence {
+  color: #15803d;
+  font-weight: 600;
+}
+
+.lowConfidence {
+  color: #ca8a04;
+  font-weight: 600;
+}
+
+.noData {
+  text-align: center;
+  color: #64748b;
+  font-style: italic;
+  margin-top: 2rem;
+}
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.input {
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  width: 250px;
+}
+
+.sliderLabel {
+  font-size: 0.9rem;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.highAnomaly {
+  background-color: #fee2e2;
+}
+
+.anomalyTable th,
+.anomalyTable td {
+  vertical-align: middle;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.input {
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  width: 250px;
+}
+
+.highAnomaly {
+  background-color: #fee2e2;
+}
+
+.highConfidence {
+  color: #15803d;
+  font-weight: 600;
+}
+
+.lowConfidence {
+  color: #ca8a04;
+  font-weight: 600;
+}
+
+.errorCell {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.noData {
+  text-align: center;
+  color: #64748b;
+  font-style: italic;
+  margin-top: 2rem;
+}
+
+.highThreat {
+  background-color: #dc2626; /* red */
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+.mediumThreat {
+  background-color: #f97316; /* orange */
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+.lowThreat {
+  background-color: #fde047; /* yellow */
+  color: black;
+  font-weight: bold;
+  text-align: center;
+}
+
+.errorCell {
+  color: #b91c1c;
+  font-weight: 600;
+}
