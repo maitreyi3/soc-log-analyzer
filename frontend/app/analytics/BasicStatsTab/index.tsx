@@ -104,7 +104,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ dashboard }) =>
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
             <h3>Timeline of Requests (Hourly)
-              <Info text="how many requests were received each hour and how the error rate fluctuated." />
+              <Info text="How many requests were received each hour and how the error rate fluctuated." />
             </h3>
           </div>
 
@@ -145,10 +145,14 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ dashboard }) =>
               />
 
               <Tooltip
-                formatter={(val, name) =>
-                  name === "errorRate" ? [`${val}%`, "Error Rate"] : [val, "Requests"]
+                labelFormatter={(label) => `Hour: ${label}`}
+                formatter={(value, _name, { dataKey }) =>
+                  dataKey === "errorRate"
+                    ? [`${value}%`, "Error Rate"]
+                    : [value, "Requests"]
                 }
               />
+
 
               <Legend verticalAlign="top" height={36} />
 
