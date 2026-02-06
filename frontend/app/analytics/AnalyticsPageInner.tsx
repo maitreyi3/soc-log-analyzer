@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import axios from "axios";
 import AnalyticsDashboard from "./BasicStatsTab";
 import AIBasedAnalytics from "./AIBasedTab";
 import uploadStyles from "../upload/UploadPage.module.css"; 
-import styles from "./AnalyticsPage.module.css";      
+import styles from "./AnalyticsPage.module.css";   
+import { checkLogin, getDashboard } from "@/lib/api";
 
 export default function AnalyticsPageInner() {
   const router = useRouter();
@@ -16,13 +16,11 @@ export default function AnalyticsPageInner() {
   const [userRole, setUserRole] = useState<"admin" | "test" | null>(null);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/dashboard", { withCredentials: true })
+    getDashboard()
       .then(res => setDashboard(res.data))
       .catch(() => setDashboard({ error: true }));
 
-    axios
-      .get("http://localhost:8000/api/check_login", { withCredentials: true })
+    checkLogin()
       .then(res => res.data.logged_in && setUserRole(res.data.role))
       .catch(() => setUserRole(null));
   }, [searchParams]);

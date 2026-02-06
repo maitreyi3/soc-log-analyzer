@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios";
+
 import { useRouter } from "next/navigation";
 import styles from "./LoginPage.module.css";
+import { login } from "@/lib/api";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -19,11 +20,7 @@ export default function LoginPage() {
       return;
     }
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/login",
-        { username, password },
-        { withCredentials: true }
-      );
+      const res = await login(username, password);
       setMessage(res.data.message || "Login successful!");
       if (res.status === 200) router.push("/upload");
     } catch {

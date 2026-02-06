@@ -5,6 +5,11 @@ from collections import Counter, defaultdict
 from sklearn.ensemble import IsolationForest
 import numpy as np
 
+ANOMALY_CONTAMINATION = 0.15
+RPM_THRESHOLD = 5
+CONFIDENCE_THRESHOLD = 0.05
+ERROR_RATE_ANOMALY = 25
+
 # Apache Log Format Regex
 clf_pattern = re.compile(
     r'(?P<ip>\S+) '
@@ -58,7 +63,26 @@ def parse_apache_log_file(file_path: str, max_lines: int = 50000) -> List[Dict[s
                 break
     return parsed_logs
 
-def detect_anomalies_ai(entries):
+def process_apache_log_file(file_path: str) -> dict:
+    """
+    Parse an Apache log file and generate preview + dashboard.
+    """
+    with open(file_path, "r", encoding="utf-8") as f:
+        first_line = f.readline().strip()
+
+    if detect_log_type(first_line) != "apache_clf":
+        raise ValueError("Unsupported or invalid Apache log format")
+
+    parsed_logs = parse_apache_log_file(file_path)
+
+    return {
+        "total_entries": len(parsed_logs),
+        "preview": parsed_logs[:50],
+        "dashboard": generate_dashboard(parsed_logs),
+    }
+
+
+def detect_anomalies_ai(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     ip_stats = defaultdict(lambda: {
         'total': 0,
         'errors': 0,
@@ -109,7 +133,7 @@ def detect_anomalies_ai(entries):
         return []
 
     # Fit Isolation Forest
-    model = IsolationForest(contamination=0.15, random_state=42)
+    model = IsolationForest(contamination=ANOMALY_CONTAMINATION, random_state=42)
     preds = model.fit_predict(np.array(data))
 
     anomalies = []
@@ -126,7 +150,7 @@ def detect_anomalies_ai(entries):
             confidence = round(min(1.0, err_rate + rpm / 100), 2)
 
             # Skip low-confidence entries
-            if confidence < 0.05:
+            if confidence < CONFIDENCE_THRESHOLD:
                 continue
 
             reasons = []
@@ -136,7 +160,7 @@ def detect_anomalies_ai(entries):
             elif err_rate > 0.3:
                 reasons.append(f"High error rate - {errors}/{total} ({round(err_rate * 100)}%) requests failed")
 
-            if rpm > 5:
+            if rpm > RPM_THRESHOLD:
                 reasons.append(f"Unusual request burst - {rpm} RPM in {time_span}s")
 
             if not reasons:
@@ -182,7 +206,7 @@ def generate_dashboard(logs: List[Dict[str, Any]]) -> Dict[str, Any]:
                 "url": url,
                 "method": log["http_method"]
             })
-        except:
+        except (KeyError, ValueError):
             continue
 
         ip_counter[ip] += 1
@@ -225,7 +249,7 @@ def generate_dashboard(logs: List[Dict[str, Any]]) -> Dict[str, Any]:
             "top_status": top_status,
             "total_events": total,
             "error_rate": error_rate,
-            "anomaly": error_rate > 25  # mark anomaly threshold
+            "anomaly": error_rate > ERROR_RATE_ANOMALY
         })
     avg_per_hour = round(sum(hourly_requests.values()) / max(1, len(hourly_requests)), 2)
 

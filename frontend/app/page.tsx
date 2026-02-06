@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./HomePage.module.css";
-import axios from "axios";
+
+import { checkLogin, logout } from "@/lib/api";
 
 interface UserInfo {
   username: string;
@@ -16,8 +17,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/check_login", { withCredentials: true })
+      checkLogin()
       .then((res) => {
         if (res.data.logged_in) {
           setUser({ username: res.data.username, role: res.data.role });
@@ -31,11 +31,7 @@ export default function HomePage() {
 
   const handleLogout = async () => {
     try {
-      await axios.post(
-        "http://localhost:8000/api/logout",
-        {},
-        { withCredentials: true }
-      );
+      await logout();
       setUser(null);
     } catch (err) {
       console.error("Logout failed:", err);

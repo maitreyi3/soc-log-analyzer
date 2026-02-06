@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import styles from "./UploadPage.module.css";
+import { uploadLog } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 
 interface PreviewEvent {
   client_ip: string;
@@ -42,22 +43,15 @@ export default function UploadPage() {
   const [preview, setPreview] = useState<PreviewEvent[]>([]);
   const [dashboard, setLocalDashboard] = useState<Dashboard | null>(null);
   const [message, setMessage] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [loggedIn, setLoggedIn] = useState<boolean>(false);
-  const [loadingSession, setLoadingSession] = useState<boolean>(true);
+  const [uploadLoading, setUploadLoading] = useState<boolean>(false);
+  const { loggedIn, loading: authLoading, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<'upload' | 'preview' | 'analytics'>('upload');
 
-
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/check_login", { withCredentials: true })
-      .then((res) => {
-        if (res.data.logged_in) setLoggedIn(true);
-        else router.push("/login");
-      })
-      .catch(() => router.push("/login"))
-      .finally(() => setLoadingSession(false));
-  }, [router]);
+  if (!authLoading && !loggedIn) {
+    router.push("/login");
+  }
+  }, [authLoading, loggedIn, router]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -75,7 +69,7 @@ export default function UploadPage() {
       return;
     }
 
-    setLoading(true);
+    setUploadLoading(true);
     setMessage("");
     setPreview([]);
     setLocalDashboard(null);
@@ -85,14 +79,7 @@ export default function UploadPage() {
       formData.append("file", file);
       formData.append("log_type", logType);
 
-      const response = await axios.post(
-        "http://localhost:8000/api/upload",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true,
-        }
-      );
+      const response = await uploadLog(formData);
 
       setMessage(response.data.message || "Upload successful!");
       setPreview(response.data.preview_events || []);
@@ -114,24 +101,23 @@ export default function UploadPage() {
         );
       }
     } finally {
-      setLoading(false);
+      setUploadLoading(false);
     }
   };
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:8000/api/logout", {}, { withCredentials: true });
-      setLoggedIn(false);
+      await logout();
       router.push("/"); 
     } catch (error) {
     }
   };
 
-  if (loadingSession) {
+  if (authLoading) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}></div>
-        <div>Loading session...</div>
+        <div>Checking session...</div>
       </div>
     );
   }
@@ -212,10 +198,10 @@ export default function UploadPage() {
 
           <button 
             onClick={handleUpload} 
-            disabled={loading || !file}
+            disabled={uploadLoading || !file}
             className={styles.uploadButton}
           >
-            {loading ? (
+            {uploadLoading ? (
               <>
                 <div className={styles.buttonSpinner}></div>
                 Analyzing...

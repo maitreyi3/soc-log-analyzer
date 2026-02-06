@@ -1,19 +1,30 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
+  baseURL: process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000",
+  withCredentials: true,
 });
 
-// Automatically attach token if present
-api.interceptors.request.use((cfg) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("token");
-    if (token) {
-      cfg.headers = cfg.headers || {};
-      cfg.headers["Authorization"] = `Bearer ${token}`;
-    }
-  }
-  return cfg;
-});
+export const login = (username: string, password: string) =>
+  api.post("/api/login", { username, password });
+
+export const checkLogin = () => api.get("/api/check_login");
+export const logout = () => api.post("/api/logout");
+
+export const uploadLog = (formData: FormData) =>
+  api.post("/api/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+export const getDashboard = () => api.get("/api/dashboard");
+export const getFiles = () => api.get("/api/files");
+
+export const downloadFile = async (filename: string) => {
+  const response = await api.get(`/api/files/${filename}`, {
+    responseType: "blob",
+  });
+
+  return response.data;
+};
 
 export default api;

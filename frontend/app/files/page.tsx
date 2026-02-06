@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import styles from "./FilePage.module.css";
+import { getFiles, downloadFile } from "@/lib/api";
 
 export default function FileManagementPage() {
   const [files, setFiles] = useState<string[]>([]);
@@ -11,18 +11,29 @@ export default function FileManagementPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  const handleDownload = async (filename: string) => {
+  try {
+    const blob = await downloadFile(filename);
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    alert("Failed to download file");
+  }
+};
+
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/files", { withCredentials: true })
-      .then((res) => {
-        setFiles(res.data.files || []);
-      })
-      .catch(() => {
-        setError("Failed to load files.");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    getFiles()
+      .then((res) => setFiles(res.data.files || []))
+      .catch(() => setError("Failed to load files."))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -66,9 +77,7 @@ export default function FileManagementPage() {
                 <td>
                   <button
                     className={styles.downloadBtn}
-                    onClick={() =>
-                      window.open(`http://localhost:8000/uploads/${file}`, "_blank")
-                    }
+                    onClick = {() => handleDownload(file)}
                   >
                     Download
                   </button>
