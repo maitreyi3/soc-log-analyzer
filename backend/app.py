@@ -31,7 +31,7 @@ app.config.update(
     SESSION_COOKIE_NAME="session",
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
-    SESSION_COOKIE_SECURE=False,  # True only with HTTPS
+    SESSION_COOKIE_SECURE=os.getenv("FLASK_ENV") == "production",
     SESSION_USE_SIGNER=True,
 )
 
@@ -49,9 +49,10 @@ app.register_blueprint(upload_bp, url_prefix="/api")
 app.register_blueprint(analytics_bp, url_prefix="/api")
 app.register_blueprint(files_bp, url_prefix="/api")
 
-# @app.route('/uploads/<filename>')
-# def uploaded_file(filename):
-#     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
 if __name__ == "__main__":
-    app.run(debug=True, port=8000, host='0.0.0.0')
+    # app.run(debug=True, port=8000, host='0.0.0.0')
+    app.run(
+        debug=os.getenv("FLASK_DEBUG", "false").lower() == "true",
+        port=8000,
+        host="0.0.0.0"
+    )

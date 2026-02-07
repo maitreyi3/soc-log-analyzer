@@ -1,42 +1,10 @@
 import os
 from flask import Blueprint, request, jsonify
-from werkzeug.utils import secure_filename
+# from werkzeug.utils import secure_filename
 from backend.config import UPLOAD_FOLDER
-
-from backend.parsers.apache_parser import (
-    detect_log_type,
-    parse_apache_log_file,
-    generate_dashboard,
-    process_apache_log_file
-)
+from backend.services.log_analysis_service import LogAnalysisService
 
 analytics_bp = Blueprint("analytics_bp", __name__)
-
-# File Upload & Analytics
-@analytics_bp.route("/upload", methods=["POST"])
-def upload_log():
-    if "file" not in request.files:
-        return jsonify({"error": "No file provided"}), 400
-
-    file = request.files["file"]
-    if file.filename == "":
-        return jsonify({"error": "No selected file"}), 400
-
-    filename = secure_filename(file.filename)
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(filepath)
-    
-    try:
-        result = process_apache_log_file(filepath)
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
-
-    return jsonify({
-        "message": f"Parsed {result['total_entries']} log entries successfully",
-        "filename": filename,
-        "preview_events": result["preview"],
-        "dashboard": result["dashboard"]
-    })
 
 # Fetch Analytics for an Uploaded File
 @analytics_bp.route("/analytics/<filename>", methods=["GET"])
@@ -44,16 +12,8 @@ def get_analytics(filename):
     filepath = os.path.join(UPLOAD_FOLDER, filename)
     if not os.path.exists(filepath):
         return jsonify({"error": "File not found"}), 404
-
-    # with open(filepath, "r", encoding="utf-8") as f:
-    #     first_line = f.readline().strip()
-    # if detect_log_type(first_line) != "apache_clf":
-    #     return jsonify({"error": "File is not a supported Apache log"}), 400
-
-    # parsed_logs = parse_apache_log_file(filepath)
-    # dashboard = generate_dashboard(parsed_logs)
     try:
-        result = process_apache_log_file(filepath)
+        result = LogAnalysisService.analyze_apache_log(filepath)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
@@ -76,13 +36,12 @@ def dashboard_combined():
     latest_path = max(filepaths, key=os.path.getmtime)
     latest_file = os.path.basename(latest_path)
 
-    with open(latest_path, "r", encoding="utf-8") as f:
-        first_line = f.readline().strip()
-    if detect_log_type(first_line) != "apache_clf":
-        return jsonify({"error": "Invalid log format"}), 400
+    try:
+        result = LogAnalysisService.analyze_apache_log(latest_path)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
 
-    parsed_logs = parse_apache_log_file(latest_path)
-    dashboard = generate_dashboard(parsed_logs)
+    dashboard = result["dashboard"]
 
     return jsonify({
         "filename": latest_file,

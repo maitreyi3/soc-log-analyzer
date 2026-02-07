@@ -1,5 +1,6 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from backend.db import get_db_connection
+from typing import Optional, Tuple
 
 def create_user(username, password):
     conn = get_db_connection()
@@ -14,7 +15,7 @@ def create_user(username, password):
     cur.close()
     conn.close()
 
-def get_user(username):
+def get_user(username: str) -> Optional[Tuple[str, str]]:
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT username, password_hash FROM users WHERE username = %s", (username,))

@@ -1,7 +1,8 @@
 import psycopg2
 from backend import config
+from psycopg2.extensions import connection
 
-def get_db_connection():
+def get_db_connection() -> connection:
     conn = psycopg2.connect(
         host=config.DB_HOST,
         dbname=config.DB_NAME,
