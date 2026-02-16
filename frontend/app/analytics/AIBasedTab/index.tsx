@@ -1,26 +1,15 @@
 "use client";
 import React from "react";
 import styles from "./styles.module.css";
+import type { Anomaly } from "@/lib/types/analytics";
 
-interface Anomaly {
-  ip: string;
-  total_requests: number;
-  error_requests: number;
-  error_rate: number;
-  requests_per_minute: number;
-  time_span_sec: number;
-  confidence: number;
-  reason: string;
-}
 
 interface AIBasedAnalyticsProps {
-  dashboard: {
-    anomalies?: Anomaly[];
-  };
+  anomalies: Anomaly[];
 }
 
-const AIBasedAnalytics: React.FC<AIBasedAnalyticsProps> = ({ dashboard }) => {
-  const anomalies = (dashboard?.anomalies || []).sort(
+const AIBasedAnalytics: React.FC<AIBasedAnalyticsProps> = ({ anomalies }) => {
+  const sortedAnomalies = [...anomalies].sort(
     (a, b) => b.confidence - a.confidence
   );
 
@@ -35,10 +24,10 @@ const AIBasedAnalytics: React.FC<AIBasedAnalyticsProps> = ({ dashboard }) => {
       <h2 className={styles.title}>AI-Based Anomaly Detection</h2>
 
       <div className={styles.summary}>
-        <strong>{anomalies.length}</strong> anomalous IPs identified via behavior-based detection.
+        <strong>{sortedAnomalies.length}</strong> anomalous IPs identified via behavior-based detection.
       </div>
 
-      {anomalies.length > 0 ? (
+      {sortedAnomalies.length > 0 ? (
         <div className={styles.tableContainer}>
           <table className={styles.anomalyTable}>
             <thead>
@@ -54,7 +43,7 @@ const AIBasedAnalytics: React.FC<AIBasedAnalyticsProps> = ({ dashboard }) => {
               </tr>
             </thead>
             <tbody>
-              {anomalies.map((anomaly, index) => (
+              {sortedAnomalies.map((anomaly, index) => (
                 <tr key={index}>
                   <td>{anomaly.ip}</td>
                   <td>{anomaly.total_requests}</td>

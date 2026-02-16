@@ -3,18 +3,14 @@ from datetime import datetime
 from typing import List, Dict, Any
 from backend.analytics.log_analytics import generate_dashboard
 
-ANOMALY_CONTAMINATION = 0.15
-RPM_THRESHOLD = 5
-CONFIDENCE_THRESHOLD = 0.05
-ERROR_RATE_ANOMALY = 25
-
 # Apache Log Format Regex
 clf_pattern = re.compile(
     r'(?P<ip>\S+) '
     r'(?P<identity>\S+) '
     r'(?P<user>\S+) '
     r'\[(?P<timestamp>[^\]]+)\] '
-    r'"(?P<method>\S+) (?P<path>\S+) (?P<protocol>[^"]+)" '
+    # r'"(?P<method>\S+) (?P<path>\S+) (?P<protocol>[^"]+)" '
+    r'"(?P<method>\S+) (?P<path>.*?) (?P<protocol>HTTP/[^"]+)" '
     r'(?P<status>\d{3}) '
     r'(?P<size>\S+) '
     r'"(?P<referrer>[^"]*)" '
@@ -32,7 +28,11 @@ def parse_apache_clf_line(line: str) -> Dict[str, Any]:
         return None
 
     data = match.groupdict()
-    dt = datetime.strptime(data["timestamp"], "%d/%b/%Y:%H:%M:%S %z")
+    try:
+        dt = datetime.strptime(data["timestamp"], "%d/%b/%Y:%H:%M:%S %z")
+    except ValueError:
+        # Fallback for logs without timezone
+        dt = datetime.strptime(data["timestamp"], "%d/%b/%Y:%H:%M:%S")
     timestamp_iso = dt.isoformat()
     size = int(data["size"]) if data["size"].isdigit() else 0
 

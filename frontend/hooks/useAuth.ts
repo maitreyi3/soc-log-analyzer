@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { checkLogin, logout as apiLogout } from "@/lib/api";
-
-type Role = "admin" | "test" | null;
+import { checkLogin, logout as apiLogout, Role } from "@/lib/api/auth";
 
 interface AuthState {
   loggedIn: boolean;
   username: string | null;
-  role: Role;
+  role: Role | null;
   loading: boolean;
 }
 
@@ -21,11 +19,12 @@ export function useAuth() {
   });
 
   useEffect(() => {
-    let mounted = true;
+    let cancelled = false;
 
-    checkLogin()
-      .then((res) => {
-        if (!mounted) return;
+    const loadAuth = async () => {
+      try {
+        const res = await checkLogin();
+        if (cancelled) return;
 
         setAuth({
           loggedIn: res.data.logged_in,
@@ -33,20 +32,22 @@ export function useAuth() {
           role: res.data.role ?? null,
           loading: false,
         });
-      })
-      .catch(() => {
-        if (!mounted) return;
+      } catch {
+        if (!cancelled) {
+          setAuth({
+            loggedIn: false,
+            username: null,
+            role: null,
+            loading: false,
+          });
+        }
+      }
+    };
 
-        setAuth({
-          loggedIn: false,
-          username: null,
-          role: null,
-          loading: false,
-        });
-      });
+    loadAuth();
 
     return () => {
-      mounted = false;
+      cancelled = true;
     };
   }, []);
 

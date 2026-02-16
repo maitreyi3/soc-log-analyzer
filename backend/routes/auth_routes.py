@@ -6,9 +6,14 @@ auth_bp = Blueprint("auth", __name__)
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
+    print("DEBUG: raw data:", data)
+
     username = data.get("username")
     password = data.get("password")
-
+    print("DEBUG: username:", username)
+    print("DEBUG: password:", password)
+    result = verify_user(username, password)
+    print("DEBUG: verify_user result:", result)
     # Verify user from DB using hashed password
     if verify_user(username, password):
         session["logged_in"] = True

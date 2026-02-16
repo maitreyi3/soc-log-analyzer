@@ -10,6 +10,8 @@ ANOMALY_CONTAMINATION = 0.15
 RPM_THRESHOLD = 5
 CONFIDENCE_THRESHOLD = 0.05
 ERROR_RATE_ANOMALY = 25
+CONCENTRATION_THRESHOLD = 0.3  # 30% of requests in single minute = suspicious
+MIN_REQUESTS_FOR_ANOMALY = 10  # Minimum requests to flag as anomaly
 
 
 def detect_anomalies_ai(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -40,28 +42,57 @@ def detect_anomalies_ai(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         errors = stats["errors"]
         error_rate = errors / total if total else 0
 
-        # Time window (in seconds)
-        timestamps = sorted([datetime.fromisoformat(ts) for ts in stats["timestamps"]])
-        time_span_sec = (timestamps[-1] - timestamps[0]).total_seconds() if len(timestamps) > 1 else 1
+        timestamps = []
+        for ts in stats["timestamps"]:
+            try:
+                timestamps.append(datetime.fromisoformat(ts))
+            except ValueError:
+                continue
 
-        # Requests per minute
-        rpm = round(total / (time_span_sec / 60), 2) if time_span_sec > 0 else total
+        if not timestamps:
+            continue
+
+        timestamps.sort()
+
+        # Calculate time span and RPM properly
+        if len(timestamps) > 1:
+            time_span_sec = (timestamps[-1] - timestamps[0]).total_seconds()
+            rpm = round(total / (time_span_sec / 60), 2) if time_span_sec > 0 else 0
+        else:
+            time_span_sec = 0
+            rpm = 0  # Single request has no meaningful RPM
+
+        # Calculate request concentration - detects burst attacks
+        if len(timestamps) > 1:
+            minute_counts = Counter()
+            for ts in timestamps:
+                minute_key = ts.strftime("%Y-%m-%d %H:%M")
+                minute_counts[minute_key] += 1
+            
+            max_per_minute = max(minute_counts.values())
+            concentration = round(max_per_minute / total, 2)  # What % happened in busiest minute
+        else:
+            concentration = 1.0
 
         features_per_ip[ip] = {
             "total_requests": total,
             "error_requests": errors,
             "error_rate": round(error_rate, 2),
             "requests_per_minute": rpm,
-            "time_span_sec": round(time_span_sec, 2)
+            "time_span_sec": round(time_span_sec, 2),
+            "concentration": concentration
         }
 
-        data.append([total, error_rate, rpm])
+        data.append([total, error_rate, rpm, concentration])
         ip_list.append(ip)
 
     if not data:
         return []
 
     model = IsolationForest(contamination=ANOMALY_CONTAMINATION, random_state=42)
+    if len(data) < 2:
+        return []
+
     preds = model.fit_predict(np.array(data))
 
     anomalies = []
@@ -72,23 +103,30 @@ def detect_anomalies_ai(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
             total = stats["total_requests"]
             errors = stats["error_requests"]
-            err_rate = stats["error_rate"]
+            error_rate = stats["error_rate"]
             rpm = stats["requests_per_minute"]
             time_span = stats["time_span_sec"]
+            concentration = stats["concentration"]
 
-            confidence = round(min(1.0, err_rate + rpm / 100), 2)
+            # Skip IPs with too few requests to be meaningful
+            if total < MIN_REQUESTS_FOR_ANOMALY:
+                continue
+
+            confidence = round(min(1.0, error_rate * 0.7 + min(rpm / 100, 1.0) * 0.3), 2)
 
             if confidence < CONFIDENCE_THRESHOLD:
                 continue
 
             reasons = []
-            if err_rate >= 0.9:
+            if error_rate >= 0.9:
                 reasons.append(f"Potential brute force - {errors}/{total} failed requests")
-            elif err_rate > 0.3:
-                reasons.append(f"High error rate - {errors}/{total} ({round(err_rate * 100)}%) requests failed")
+            elif error_rate > 0.3:
+                reasons.append(f"High error rate - {errors}/{total} ({round(error_rate * 100)}%) requests failed")
 
-            if rpm > RPM_THRESHOLD:
-                reasons.append(f"Unusual request burst - {rpm} RPM in {time_span}s")
+            if rpm > RPM_THRESHOLD and concentration > CONCENTRATION_THRESHOLD:
+                reasons.append(f"Attack burst detected - {rpm} RPM with {round(concentration * 100)}% requests in single minute")
+            elif rpm > RPM_THRESHOLD:
+                reasons.append(f"High request rate - {rpm} RPM in {time_span}s")
 
             if not reasons:
                 reasons.append("Unusual behavior - request pattern deviates significantly from baseline")
@@ -97,8 +135,9 @@ def detect_anomalies_ai(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 "ip": ip,
                 "total_requests": total,
                 "error_requests": errors,
-                "error_rate": err_rate,
+                "error_rate": error_rate,
                 "requests_per_minute": rpm,
+                "concentration": concentration,
                 "time_span_sec": time_span,
                 "confidence": confidence,
                 "reason": " + ".join(reasons)

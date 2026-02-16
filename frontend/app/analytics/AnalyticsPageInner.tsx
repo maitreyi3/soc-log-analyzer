@@ -1,31 +1,64 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AnalyticsDashboard from "./BasicStatsTab";
 import AIBasedAnalytics from "./AIBasedTab";
-import uploadStyles from "../upload/UploadPage.module.css"; 
-import styles from "./AnalyticsPage.module.css";   
+import uploadStyles from "../upload/UploadPage.module.css";
+import styles from "./AnalyticsPage.module.css";
+import type { DashboardStats } from "@/lib/types/analytics";
+
 import { checkLogin, getDashboard } from "@/lib/api";
+import type { Role } from "@/lib/api/auth";
 
 export default function AnalyticsPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [dashboard, setDashboard] = useState<any>(null);
+
+  const [dashboard, setDashboard] = useState<DashboardStats | null>(null);
+  const [dashboardError, setDashboardError] = useState(false);
   const [activeTab, setActiveTab] = useState<"basic" | "ai">("basic");
-  const [userRole, setUserRole] = useState<"admin" | "test" | null>(null);
+  const [userRole, setUserRole] = useState<Role | null>(null);
 
   useEffect(() => {
-    getDashboard()
-      .then(res => setDashboard(res.data))
-      .catch(() => setDashboard({ error: true }));
+    let cancelled = false;
 
-    checkLogin()
-      .then(res => res.data.logged_in && setUserRole(res.data.role))
-      .catch(() => setUserRole(null));
+    const loadDashboard = async () => {
+      try {
+        const res = await getDashboard();
+        if (!cancelled) {
+          setDashboard(res.data);
+          setDashboardError(false);
+        }
+      } catch {
+        if (!cancelled) {
+          setDashboardError(true);
+        }
+      }
+    };
+
+    const loadAuth = async () => {
+      try {
+        const res = await checkLogin();
+        if (!cancelled) {
+          setUserRole(res.data.logged_in ? res.data.role ?? null : null);
+        }
+      } catch {
+        if (!cancelled) {
+          setUserRole(null);
+        }
+      }
+    };
+
+    loadDashboard();
+    loadAuth();
+
+    return () => {
+      cancelled = true;
+    };
   }, [searchParams]);
 
-  if (!dashboard) {
+  if (!dashboard && !dashboardError) {
     return (
       <div className={styles.spinnerContainer}>
         <div className={styles.spinner} />
@@ -34,13 +67,18 @@ export default function AnalyticsPageInner() {
     );
   }
 
-  if (dashboard.error) {
+  if (dashboardError) {
     return (
       <div className={styles.errorContainer}>
         ❌ Failed to load dashboard data. Please upload a valid log file.
       </div>
     );
   }
+
+  if (!dashboard) {
+    return null;
+  }
+
 
   return (
     <div className={styles.container}>
@@ -80,7 +118,8 @@ export default function AnalyticsPageInner() {
         {activeTab === "basic" ? (
           <AnalyticsDashboard dashboard={dashboard} />
         ) : (
-          <AIBasedAnalytics dashboard={dashboard} />
+          <AIBasedAnalytics anomalies={dashboard.anomalies ?? []} />
+
         )}
       </div>
     </div>

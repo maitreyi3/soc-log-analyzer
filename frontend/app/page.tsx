@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./HomePage.module.css";
+import type { Role } from "@/lib/api/auth";
 
 import { checkLogin, logout } from "@/lib/api";
 
 interface UserInfo {
   username: string;
-  role: "admin" | "test";
+  role: Role;
 }
 
 export default function HomePage() {
@@ -16,18 +17,38 @@ export default function HomePage() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // useEffect(() => {
+  //     checkLogin()
+  //     .then((res) => {
+  //       if (res.data.logged_in) {
+  //         setUser({ username: res.data.username, role: res.data.role });
+  //       } else {
+  //         setUser(null);
+  //       }
+  //     })
+  //     .catch(() => setUser(null))
+  //     .finally(() => setLoading(false));
+  // }, []);
   useEffect(() => {
-      checkLogin()
-      .then((res) => {
-        if (res.data.logged_in) {
-          setUser({ username: res.data.username, role: res.data.role });
-        } else {
-          setUser(null);
-        }
-      })
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
-  }, []);
+  checkLogin()
+    .then((res) => {
+      if (
+        res.data.logged_in &&
+        res.data.username &&
+        res.data.role
+      ) {
+        setUser({
+          username: res.data.username,
+          role: res.data.role,
+        });
+      } else {
+        setUser(null);
+      }
+    })
+    .catch(() => setUser(null))
+    .finally(() => setLoading(false));
+}, []);
+
 
   const handleLogout = async () => {
     try {
